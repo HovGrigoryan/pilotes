@@ -1,0 +1,32 @@
+version: '2'
+services:
+  h2:
+    container_name: 'h2'
+    hostname: 'h2'
+    image: 1000kit/h2
+    env_file:
+      - .env
+    environment:
+      - H2_USERNAME=${H2_USERNAME}
+      - H2_PASSWORD=${H2_PASSWORD}
+    volumes:
+      - h2-data:/opt/h2-data
+  accounting:
+    image: pilotes
+    ports:
+      - '8081:8099'
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:pilotes
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_PLATFORM=${SPRING_DATASOURCE_PLATFORM}
+      - SPRING_DATASOURCE_DRIVER=${SPRING_DATASOURCE_DRIVER}
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      - h2
+volumes:
+  h2-data:
